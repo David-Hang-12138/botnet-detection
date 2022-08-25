@@ -5,10 +5,11 @@ import errno
 import tarfile
 from six.moves import urllib
 import urllib.request as ur
-
+import ssl
 
 def decide_download(url):
-    d = ur.urlopen(url)
+    context = ssl._create_unverified_context()
+    d = ur.urlopen(url, context = context)
     GBFACTOR = float(1 << 30)
     size = int(d.info()["Content-Length"])/GBFACTOR
 
@@ -48,7 +49,8 @@ def download_url(url, folder, log=True):
         print('Downloading', url)
 
     makedirs(folder)
-    data = urllib.request.urlopen(url)
+    context = ssl._create_unverified_context()
+    data = urllib.request.urlopen(url, context=context)
 
     with open(path, 'wb') as f:
         f.write(data.read())

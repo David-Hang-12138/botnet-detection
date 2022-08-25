@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn import Parameter
 from torch_geometric.nn.inits import glorot, zeros
-from torch_geometric.utils import scatter_
+#from torch_geometric.utils import scatter_
 
 from .gcn_base_models import NodeModelBase
 from .common import activation, softmax
@@ -96,7 +96,8 @@ class NodeModelAttention(NodeModelBase):
         x_j = x_j * alpha.view(-1, self.nheads, 1)
 
         # aggregate features to nodes, resulting in size (N, n_heads, C_out_1head)
-        x = scatter_(self.aggr, x_j, edge_index[1], dim_size=x.size(0))
+        #x = scatter_(self.aggr, x_j, edge_index[1], dim_size=x.size(0))
+        x = torch.scatter(self.aggr, x_j, edge_index[1], dim_size=x.size(0), reduce='add')
 
         # combine multi-heads, resulting in size (N, C_out)
         if self.att_combine == 'cat':

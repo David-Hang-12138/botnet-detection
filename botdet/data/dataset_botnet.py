@@ -157,6 +157,8 @@ class BotnetDataset(Dataset):
             for path, split in zip(self.processed_paths, ('train', 'val', 'test')):
                 print(f'writing {split} set ' + '-' * 10)
                 ori_graph_ids = split_idx[split]
+                print(f'{split} set {ori_graph_ids}')
+                ori_graph_ids = split_idx[split]
                 with h5py.File(path, 'w') as g:
                     num_nodes_sum = 0
                     num_edges_sum = 0
@@ -169,13 +171,13 @@ class BotnetDataset(Dataset):
                         num_evil_edges_flag = False
 
                     for n, i in tqdm(enumerate(ori_graph_ids)):
+                        print(f'n={n} i={i}')
                         f.copy(str(i), g, name=str(n))
                         if self.add_nfeat_ones:
                             g[str(n)].create_dataset('x',
                                                      shape=(g[str(n)].attrs['num_nodes'], 1),
                                                      dtype='f4',
                                                      data=np.ones((g[str(n)].attrs['num_nodes'], 1)))
-
                         num_nodes_sum += f[str(i)].attrs['num_nodes']
                         num_edges_sum += f[str(i)].attrs['num_edges']
                         num_evils_sum += f[str(i)].attrs['num_evils']

@@ -65,8 +65,8 @@ def parse_args():
     parser.add_argument('--data_name', type=str, default=data_name,
                         choices=['chord', 'debru', 'kadem', 'leet', 'c2', 'p2p'], help='name of the botnet topology')
     parser.add_argument('--batch_size', type=int, default=batch_size, help='training batch size')
-    # parser.add_argument('--in_memory', action='store_true', help='whether to load all the data into memory')
-    parser.add_argument('--in_memory', type=int, default=in_memory, help='whether to load all the data into memory')
+    parser.add_argument('--in_memory', action=argparse.BooleanOptionalAction, help='whether to load all the data into memory')
+    #parser.add_argument('--in_memory', type=int, default=in_memory, help='whether to load all the data into memory')
     parser.add_argument('--shuffle', type=int, default=shuffle, help='whether to shuffle training data')
     # model
     parser.add_argument('--in_channels', type=int, default=in_channels, help='input node feature size')
@@ -198,7 +198,8 @@ if __name__ == '__main__':
     # torch.backends.cudnn.deterministic = True
     # torch.backends.cudnn.benchmark = False
 
-    device = torch.device(f'cuda:{args.devid}') if args.devid > -1 else torch.device('cpu')
+    #device = torch.device(f'cuda:{args.devid}') if args.devid > -1 else torch.device('cpu')
+    device = torch.device('cpu')
 
     # ========== logging setup
     log_name = os.path.splitext(args.save_name)[0]
@@ -234,7 +235,7 @@ if __name__ == '__main__':
         raise ValueError
 
     final_layer_config = {'att_combine': args.att_combine_out}
-
+    logger.info("Creating GCNModel")
     model = GCNModel(args.in_channels,
                      args.enc_sizes,
                      args.n_classes,
@@ -260,11 +261,12 @@ if __name__ == '__main__':
     logger.info('model ' + '-' * 10)
     logger.info(repr(model))
     model.to(device)
-
+    logger.info("model to device")
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.25, patience=1)
 
     # ========== train the model
+    logger.info("before train")
     train(model, args, train_loader, val_ds, test_ds, optimizer, criterion,
           scheduler, logger)

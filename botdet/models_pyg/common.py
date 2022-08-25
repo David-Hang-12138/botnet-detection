@@ -53,7 +53,8 @@ def scatter_(name, src, index, dim_size=None, out=None):
     op = getattr(torch_scatter, 'scatter_{}'.format(name))
     fill_value = -1e38 if name == 'max' else 0
 
-    out = op(src, index, 0, out, dim_size, fill_value)
+    #out = op(src, index, 0, out, dim_size, fill_value)
+    out = op(src, index, 0, out, dim_size)
     if isinstance(out, tuple):
         out = out[0]
 

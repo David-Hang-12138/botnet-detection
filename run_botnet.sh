@@ -6,7 +6,7 @@ train () {
 
   CUDA_VISIBLE_DEVICES=$gpu \
   python train_botnet.py \
-  --devid 0 \
+  --devid -1 \
   --data_dir ./data/botnet \
   --data_name "$topo" \
   --batch_size 2 \
@@ -15,11 +15,13 @@ train () {
   --residual_hop 1 \
   --deg_norm rw \
   --final proj \
-  --epochs 50 \
+  --epochs 1 \
+  --log_interval 48 \
   --lr 0.005 \
   --early_stop 1 \
   --save_dir ./saved_models \
-  --save_name "$topo"_model_lay12_rh1_rw_ep50.pt
+  --save_name "$topo"_model_lay12_rh1_rw_ep50.pt \
+  --no-in_memory
 }
 
 train 0 chord
